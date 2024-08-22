@@ -49,16 +49,16 @@ function toggleRadio()
 end
 
 if Config.Mode == 'player' then
--- Registering the command
+    -- Registering the command
     RegisterCommand("toggleRadioBehavior", function()
         toggleRadio()  -- Direct function call   
     end, false)
 end
 
--- Main thread for periodic checks
+-- Main thread for immediate radio disabling
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(1000) -- Manage performance with increased wait time
+        Citizen.Wait(100) -- Reduced wait time for faster response
         local ped = PlayerPedId()
         if IsPedInAnyVehicle(ped, false) then
             if Config.Mode == "global" then
@@ -66,6 +66,8 @@ Citizen.CreateThread(function()
             elseif Config.Mode == "player" and radioDisabled then
                 DisableRadio()
             end
+        else
+            SetUserRadioControlEnabled(true) -- Re-enable radio controls when not in a vehicle
         end
     end
 end)
